@@ -12,9 +12,9 @@
 	}
 	
         $server 	= 'localhost';
-        $user		= 'zero';
-        $password 	= 'GNUslashrei1337!';
-        $db 		= 'val';
+        $user		= 'user';
+        $password 	= 'password!';
+        $db 		= 'database';
   
         $conn = mysqli_connect($server, $user, $password, $db);
   
