@@ -1,0 +1,31 @@
+body {
+	background: #ebe7e7;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	border-bottom: 3px solid black;
+}
+
+td {
+	font-size: 400%;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+td:first-child {
+	width: 33%;
+}
+
+img {
+	vertical-align: middle;
+	align: center;
+}
+
+.header {
+	font-size: 250%;
+	background: black;
+	color: white;
+}

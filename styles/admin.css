@@ -1,0 +1,50 @@
+body {
+	background: #ebe7e7;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	border-bottom: 3px solid black;
+}
+
+td {
+	font-size: 300%;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+td:first-child {
+	width: 33%;
+}
+
+img {
+	vertical-align: middle;
+	align: center;
+}
+
+input {
+	border: 0px;
+	text-align: center;
+}
+
+input[type="text"]
+{
+	background: #ebe7e7;
+	font-size: 95%;
+	font-weight: bold;
+}
+
+input[type="submit"], button
+{
+	border: 0px;
+	color: white;
+	background: black;
+}
+
+.header {
+	font-size: 250%;
+	background: black;
+	color: white;
+}
