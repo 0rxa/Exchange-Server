@@ -23,7 +23,7 @@
 		die("Error: ".mysqli_connect_error());
 	}
 
-	$sql = "UPDATE val0 set sell = ".$sval." where ix = ".$ix;
+	$sql = "UPDATE val0 set sell = '".$sval."' where ix = ".$ix;
 	if(mysqli_query($conn, $sql))
 	{
 		echo "Record updated";
@@ -33,7 +33,7 @@
 		echo "Error: ".mysqli_error($conn);
 	}
 
-	$sql = "UPDATE val0 set buy = ".$bval." where ix = ".$ix;
+	$sql = "UPDATE val0 set buy = '".$bval."' where ix = ".$ix;
 	if(mysqli_query($conn, $sql))
 	{
 		echo "Record updated";

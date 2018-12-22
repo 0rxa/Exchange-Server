@@ -25,7 +25,7 @@
   
 	for( $c = 1; $c < 11; $c++ )
 	{
-	        $sql = "UPDATE val0 set sell = ".$sval[$c]." where ix = ".$c;
+	        $sql = "UPDATE val0 set sell = '".$sval[$c]."' where ix = ".$c;
 	        if(mysqli_query($conn, $sql))
 	        {
 	        	echo "Record updated";
@@ -35,7 +35,7 @@
 	        	echo "Error: ".mysqli_error($conn);
 	        }
 	  
-	        $sql = "UPDATE val0 set buy = ".$bval[$c]." where ix = ".$c;
+	        $sql = "UPDATE val0 set buy = '".$bval[$c]."' where ix = ".$c;
 	        if(mysqli_query($conn, $sql))
 	        {
 	        	echo "Record updated";
