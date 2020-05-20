@@ -76,18 +76,14 @@ const options = {
 	dotfiles: 'ignore',
 	etag: false,
 	extensions: ['html'],
-	index: false,
+	index: 'index.html',
 	maxAge: '12h',
 	redirect: true,
 	setHeaders: (res, path, stat) => {
 		res.set('x-built-by', 'rxa')
 	}
 }
-
 app.use(express.static('./static/', options));
-app.get('/', (req, res) => {
-	res.redirect('/index.html');
-})
 
 wss.on('connection', (ws) => {
 	obj = {
