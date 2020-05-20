@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/DarkUlixes/Exchange-Server#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "ws": "^7.3.0",
+    "ws-events": "^1.0.0"
   }
 }
