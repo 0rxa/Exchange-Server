@@ -59,6 +59,18 @@ const data = [
 		sell: 1.01
 	}
 ]
+const currencies = [
+	"USD",
+	"EUR",
+	"AUD",
+	"CAD",
+	"CHF",
+	"DKK",
+	"GBP",
+	"JPY",
+	"NOK",
+	"SEK"
+]
 
 const options = {
 	dotfiles: 'ignore',
@@ -78,18 +90,47 @@ app.get('/', (req, res) => {
 })
 
 wss.on('connection', (ws) => {
-	ws.send(JSON.stringify(data));
+	obj = {
+		currency: "all",
+		data: data
+	};
+	ws.send(JSON.stringify(obj));
 
 	ws.on('message', (msg) => {
-		ws.send(msg);
-		ws.emit('rcvmsg');
+		newValue = JSON.parse(msg);
+		if(currencies.includes(newValue.name)
+			&& newValue.sell !== null
+			&& newValue.buy !== null) {
+				update(newValue, ws);
+		} else {
+			console.log('malformed json');
+		}
 	})
 
-	ws.on('rcvmsg', () => {
-		console.log('recieved msg event');
+	ws.on('datachange', () => {
+		wss.broadcast(obj);
 	});
 })
+
+wss.broadcast = (data) => {
+	wss.clients.forEach((client) => {
+		client.send(JSON.stringify(data));
+	})
+}
 
 server.listen(8080, () => {
 	console.log(`listening on ${port}`);
 })
+
+function update(newValue, ws){
+	var ix = 0;
+	for(ix in data) {
+		if(data[ix].name === newValue.name){
+			break;
+		}
+	}
+	if(ix !== -1){
+		data[ix] = newValue;
+		ws.emit('datachange');
+	}
+}
