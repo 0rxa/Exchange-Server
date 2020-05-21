@@ -8,11 +8,10 @@ ws.onmessage = (event) => {
 };
 
 function update(currency, data) {
-	console.log(currency, data);
 	element = document.getElementById(currency);
-	const { name, buy, sell } = currency;
+	const { name, buy, sell } = data;
 	row = convertToRow(name, buy, sell);
-	currency.innerHTML = row;
+	element.innerHTML = row;
 }
 
 function updateAll(data) {

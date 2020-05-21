@@ -86,18 +86,18 @@ const options = {
 app.use(express.static('./static/', options));
 
 wss.on('connection', (ws) => {
-	obj = {
+	payload = {
 		currency: "all",
 		data: data
 	};
-	ws.send(JSON.stringify(obj));
+	ws.send(JSON.stringify(payload));
 
 	ws.on('message', (msg) => {
 		let newValue = null;
 		try{ 
 			newValue = JSON.parse(msg);
 		} catch {
-			console.log('malformed json');
+			console.err('malformed json');
 			return;
 		}
 		if(currencies.includes(newValue.name)
@@ -105,12 +105,12 @@ wss.on('connection', (ws) => {
 			&& newValue.buy !== null) {
 				update(newValue, ws);
 		} else {
-			console.log('malformed json');
+			console.err('malformed json');
 		}
 	})
 
 	ws.on('datachange', () => {
-		wss.broadcast(obj);
+		wss.broadcast(payload);
 	});
 })
 
@@ -125,14 +125,16 @@ server.listen(8080, () => {
 })
 
 function update(newValue, ws){
-	var ix = 0;
-	for(ix in data) {
-		if(data[ix].name === newValue.name){
-			break;
-		}
-	}
-	if(ix !== -1){
-		data[ix] = newValue;
-		ws.emit('datachange');
-	}
+	let obj = data.find(obj => newValue.name === obj.name);
+	let ix = data.indexOf(obj);
+	if(ix === -1) {
+		console.err('currency not found');
+		return;
+	};
+
+	data[ix] = newValue;
+	payload.data = newValue;
+	payload.currency = newValue.name;
+
+	ws.emit('datachange');
 }
