@@ -1,4 +1,4 @@
-const url = 'ws://localhost:8080'
+const url = 'ws://localhost'
 ws = new WebSocket(url);
 ws.onmessage = (event) => {
 	data = JSON.parse(event.data);
