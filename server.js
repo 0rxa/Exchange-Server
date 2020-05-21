@@ -93,7 +93,13 @@ wss.on('connection', (ws) => {
 	ws.send(JSON.stringify(obj));
 
 	ws.on('message', (msg) => {
-		newValue = JSON.parse(msg);
+		let newValue = null;
+		try{ 
+			newValue = JSON.parse(msg);
+		} catch {
+			console.log('malformed json');
+			return;
+		}
 		if(currencies.includes(newValue.name)
 			&& newValue.sell !== null
 			&& newValue.buy !== null) {
