@@ -1,6 +1,10 @@
-const url = 'ws://localhost'
+const url = 'ws://localhost:80'
 ws = new WebSocket(url);
+ws.onopen = (event) => {
+	ws.send('init');
+}
 ws.onmessage = (event) => {
+	console.log(event.data);
 	data = JSON.parse(event.data);
 	if(data.currency === "all") updateAll(data.data);
 	else update(data.currency, data.data);

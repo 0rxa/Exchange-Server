@@ -1,11 +1,10 @@
+require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient;
 
-const user = 'root';
-const password = '1234';
-const authMechanism = 'DEFAULT';
+const { DB_HOST, DB_USER, DB_PASS } = process.env;
 const dbName = 'exchange';
-const url = `mongodb://${user}:${password}@10.10.0.2:27017/?authMechanism=${authMechanism}`;
-const client = new MongoClient(url, {useNewUrlParser: true});
+const url = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:27017/?authMechanism=DEFAULT`;
+const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const pair = [
 	{

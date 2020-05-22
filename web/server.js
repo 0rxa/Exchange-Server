@@ -1,76 +1,27 @@
+require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const ws = require('ws');
 
+const MongoClient = require('mongodb').MongoClient;
+const { PORT, DB_HOST, DB_USER, DB_PASS } = process.env;
+const DB_NAME = 'exchange';
+const COLLECTION = 'pair';
+const dbConnectionURL = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:27017/`;
+const dbClient = new MongoClient(dbConnectionURL, {useNewUrlParser: true, useUnifiedTopology: true});
+
 const app = express()
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
-const port = 8080;
 
-const data = [
-	{
-		name: "USD",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "EUR",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "AUD",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "CAD",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "CHF",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "DKK",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "GBP",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "JPY",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "NOK",
-		buy: 1.00,
-		sell: 1.01
-	},
-	{
-		name: "SEK",
-		buy: 1.00,
-		sell: 1.01
-	}
-]
-const currencies = [
-	"USD",
-	"EUR",
-	"AUD",
-	"CAD",
-	"CHF",
-	"DKK",
-	"GBP",
-	"JPY",
-	"NOK",
-	"SEK"
-]
+let db;
+dbClient.connect((err) => {
+	db = dbClient.db(DB_NAME);
+	server.listen(8080, () => {
+		console.log(`listening on ${PORT}`);
+	})
+});
+
 
 const options = {
 	dotfiles: 'ignore',
@@ -85,14 +36,14 @@ const options = {
 }
 app.use(express.static('./static/', options));
 
-wss.on('connection', (ws) => {
-	payload = {
-		currency: "all",
-		data: data
-	};
-	ws.send(JSON.stringify(payload));
-
+wss.on('connection', async (ws) => {
+	ws.emit('datachange');
 	ws.on('message', (msg) => {
+		if(msg === 'init') {
+			ws.emit('datachange');
+			return;
+		}
+
 		let newValue = null;
 		try{ 
 			newValue = JSON.parse(msg);
@@ -100,19 +51,35 @@ wss.on('connection', (ws) => {
 			console.err('malformed json');
 			return;
 		}
-		if(currencies.includes(newValue.name)
-			&& newValue.sell !== null
-			&& newValue.buy !== null) {
-				update(newValue, ws);
-		} else {
-			console.err('malformed json');
-		}
+		
+		msg = JSON.parse(msg);
+
+		query(db, COLLECTION, { name: msg.name }, (res) => {
+			if(res) {
+				db.collection(COLLECTION)
+					.updateOne(res[0], { $set: msg }, (err, res) => {
+						if(err) console.log(err);
+						else ws.emit('datachange');
+					});
+			}
+		});
+
 	})
 
 	ws.on('datachange', () => {
-		wss.broadcast(payload);
+		query(db, COLLECTION, '', (res) => {
+			res = res.map((row) => {
+				delete row['_id']
+				return row;
+			});
+			wss.broadcast({
+				currency: "all",
+				data: res
+			});
+		});
 	});
 })
+
 
 wss.broadcast = (data) => {
 	wss.clients.forEach((client) => {
@@ -120,9 +87,12 @@ wss.broadcast = (data) => {
 	})
 }
 
-server.listen(8080, () => {
-	console.log(`listening on ${port}`);
-})
+async function query(db, collection, query, callback){
+	await db.collection(collection).find(query).toArray((err, res) => {
+		if(err) console.log(err);
+		else callback(res);
+	});
+}
 
 function update(newValue, ws){
 	let obj = data.find(obj => newValue.name === obj.name);
@@ -138,3 +108,4 @@ function update(newValue, ws){
 
 	ws.emit('datachange');
 }
+
