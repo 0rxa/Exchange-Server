@@ -14,9 +14,11 @@
                     <th class="header">Buy</th>
                     <th class="header">Sell</th>
                 </tr>
-                <%for(let row of rows){%>
-                    <% const { name, buy, sell } = row %>
-                    <tr class="currency" id="<%=name%>">
+                <%for(let row in rows){%>
+                    <% const { name, buy, sell } = rows[row] %>
+                    <% let bcgr = row%2 === 1 ? null : "#ebe7e7" %>
+                    <!-- <%=bcgr%> -->
+                    <tr style="background: <%=bcgr%>" class="currency" id="<%=name%>">
                         <td><img src="/images/<%=name%>.png"><%=name%></td>
                         <td><div class="<%=name%> buy" onclick="makeEditable(this)"><%=buy%></div></td>
                         <td><div class="<%=name%> sell" onclick="makeEditable(this)"><%=sell%></div></td>
