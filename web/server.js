@@ -40,85 +40,35 @@ app.use(express.json());
 app.use(express.static('./views/', options));
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
-	query(db, COLLECTION, '', (result) => {
-		result = result.map((row) => {
-			delete row['_id']
-			return row;
-		});
-		res.render('index.ejs', { rows: result });
+app.get('/', (request, response) => {
+	db.collection(COLLECTION).find('').toArray((error, result) => {
+		if(error) response.sendStatus(500);
+		response.render('index.ejs', { rows: result });
 	});
 });
 
-app.post('/update', (req, res) => {
-	console.log(req.body);
-	res.sendStatus(201);
-});
-
-wss.on('connection', async (ws) => {
-	ws.on('message', (msg) => {
-		let newValue = null;
-		try{ 
-			newValue = JSON.parse(msg);
-		} catch {
-			console.err('malformed json');
-			return;
+app.post('/update', (request, response) => {
+	let httpStatus = 204;
+	db.collection(COLLECTION).updateOne({ "name": request.body.name }, { $set: request.body }, (err, res) => {
+		const { nModified, n } = res.result;
+		if(n === 0) {
+			response.sendStatus(400);
 		}
-		
-		msg = JSON.parse(msg);
-
-		query(db, COLLECTION, { name: msg.name }, (res) => {
-			if(res) {
-				db.collection(COLLECTION)
-					.updateOne(res[0], { $set: msg }, (err, res) => {
-						if(err) console.log(err);
-						else ws.emit('datachange');
+		else if(nModified === 0) {
+			response.sendStatus(200);
+		}
+		else {
+			db.collection(COLLECTION).find('').toArray((error, result) => {
+				if(error) response.sendStatus(500);
+				wss.clients.forEach((client) => {
+					payload = JSON.stringify({
+						currency: "all",
+						rows: result
 					});
-			}
-		});
-
-	})
-
-	ws.on('datachange', () => {
-		query(db, COLLECTION, '', (res) => {
-			res = res.map((row) => {
-				delete row['_id']
-				return row;
+					client.send(payload);
+				});
+				response.sendStatus(204);
 			});
-			wss.broadcast({
-				currency: "all",
-				data: res
-			});
-		});
+		}
 	});
-})
-
-
-wss.broadcast = (data) => {
-	wss.clients.forEach((client) => {
-		client.send(JSON.stringify(data));
-	})
-}
-
-async function query(db, collection, query, callback){
-	await db.collection(collection).find(query).toArray((err, res) => {
-		if(err) console.log(err);
-		else callback(res);
-	});
-}
-
-function update(newValue, ws){
-	let obj = data.find(obj => newValue.name === obj.name);
-	let ix = data.indexOf(obj);
-	if(ix === -1) {
-		console.err('currency not found');
-		return;
-	};
-
-	data[ix] = newValue;
-	payload.data = newValue;
-	payload.currency = newValue.name;
-
-	ws.emit('datachange');
-}
-
+});
