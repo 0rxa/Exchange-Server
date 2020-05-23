@@ -1,7 +1,9 @@
 require('dotenv').config()
+const fs = require('fs');
 const express = require('express')
 const http = require('http')
 const ws = require('ws');
+const ejs = require('ejs');
 
 const MongoClient = require('mongodb').MongoClient;
 const { PORT, DB_HOST, DB_USER, DB_PASS } = process.env;
@@ -26,24 +28,35 @@ dbClient.connect((err) => {
 const options = {
 	dotfiles: 'ignore',
 	etag: false,
-	extensions: ['html'],
-	index: 'index.html',
+	extensions: [],
+	index: false,
 	maxAge: '12h',
 	redirect: true,
 	setHeaders: (res, path, stat) => {
 		res.set('x-built-by', 'rxa')
 	}
 }
-app.use(express.static('./static/', options));
+app.use(express.json());
+app.use(express.static('./views/', options));
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+	query(db, COLLECTION, '', (result) => {
+		result = result.map((row) => {
+			delete row['_id']
+			return row;
+		});
+		res.render('index.ejs', { rows: result });
+	});
+});
+
+app.post('/update', (req, res) => {
+	console.log(req.body);
+	res.sendStatus(201);
+});
 
 wss.on('connection', async (ws) => {
-	ws.emit('datachange');
 	ws.on('message', (msg) => {
-		if(msg === 'init') {
-			ws.emit('datachange');
-			return;
-		}
-
 		let newValue = null;
 		try{ 
 			newValue = JSON.parse(msg);

@@ -9,6 +9,19 @@
 	<body>
 		<table align="center">
             <tbody>
+                <tr id='head'>
+                    <th class="header">Currency</th>
+                    <th class="header">Buy</th>
+                    <th class="header">Sell</th>
+                </tr>
+                <%for(let row of rows){%>
+                    <% const { name, buy, sell } = row %>
+                    <tr class="currency" id="<%=name%>">
+                        <td><img src="/images/<%=name%>.png"><%=name%></td>
+                        <td><div class="<%=name%> buy" onclick="makeEditable(this)"><%=buy%></div></td>
+                        <td><div class="<%=name%> sell" onclick="makeEditable(this)"><%=sell%></div></td>
+                    </tr>
+                <%}%>
             </tbody>
 		</table>
     <script type="text/javascript" src="./scripts/main.js"></script>
