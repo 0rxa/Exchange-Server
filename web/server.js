@@ -47,13 +47,14 @@ app.get('/', (request, response) => {
 	});
 });
 
-app.post('/update', (request, response) => {
+app.put('/update', (request, response, next) => {
 	key = Object.keys(request.body)[1];
 	db.collection(COLLECTION).findOneAndUpdate({"name": request.body.name},
 		{$set: {[key]: request.body[key]}}, {returnOriginal: false}, (err, doc) => {
-			if(err) {
-				console.log(err);
+			if(doc.value === null) {
 				response.sendStatus(400);
+				// return next(new Error(err));
+				return;
 			}
 
 			payload = JSON.stringify({
@@ -61,5 +62,6 @@ app.post('/update', (request, response) => {
 				[key]: doc.value[key]
 			});
 			wss.clients.forEach((client) => client.send(payload));
+			response.sendStatus(204);
 		});
 });
