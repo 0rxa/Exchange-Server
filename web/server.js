@@ -48,7 +48,6 @@ app.get('/', (request, response) => {
 });
 
 app.post('/update', (request, response) => {
-	let httpStatus = 204;
 	db.collection(COLLECTION).updateOne({ "name": request.body.name }, { $set: request.body }, (err, res) => {
 		const { nModified, n } = res.result;
 		if(n === 0) {
@@ -58,13 +57,10 @@ app.post('/update', (request, response) => {
 			response.sendStatus(200);
 		}
 		else {
-			db.collection(COLLECTION).find('').toArray((error, result) => {
+			db.collection(COLLECTION).find({ name: request.body.name }).toArray((error, result) => {
 				if(error) response.sendStatus(500);
 				wss.clients.forEach((client) => {
-					payload = JSON.stringify({
-						currency: "all",
-						rows: result
-					});
+					payload = JSON.stringify(result[0]);
 					client.send(payload);
 				});
 				response.sendStatus(204);
