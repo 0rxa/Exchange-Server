@@ -14,12 +14,10 @@ function makeEditable() {
 
 ws = new WebSocket("ws://" + url);
 ws.onmessage = (event) => {
-	row = JSON.parse(event.data);
-	buy = document.getElementsByClassName(`${row.name} buy`)[0];
-	sell = document.getElementsByClassName(`${row.name} sell`)[0];
-
-	buy.textContent = row.buy;
-	sell.textContent = row.sell;
+	let cell_data = JSON.parse(event.data);
+	let key = Object.keys(cell_data)[1];
+	let cell = document.getElementsByClassName(`${cell_data.name} ${key}`)[0];
+	cell.textContent = cell_data[key];
 };
 
 function send(event) {

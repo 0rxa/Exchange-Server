@@ -48,23 +48,18 @@ app.get('/', (request, response) => {
 });
 
 app.post('/update', (request, response) => {
-	db.collection(COLLECTION).updateOne({ "name": request.body.name }, { $set: request.body }, (err, res) => {
-		const { nModified, n } = res.result;
-		if(n === 0) {
-			response.sendStatus(400);
-		}
-		else if(nModified === 0) {
-			response.sendStatus(200);
-		}
-		else {
-			db.collection(COLLECTION).find({ name: request.body.name }).toArray((error, result) => {
-				if(error) response.sendStatus(500);
-				wss.clients.forEach((client) => {
-					payload = JSON.stringify(result[0]);
-					client.send(payload);
-				});
-				response.sendStatus(204);
+	key = Object.keys(request.body)[1];
+	db.collection(COLLECTION).findOneAndUpdate({"name": request.body.name},
+		{$set: {[key]: request.body[key]}}, {returnOriginal: false}, (err, doc) => {
+			if(err) {
+				console.log(err);
+				response.sendStatus(400);
+			}
+
+			payload = JSON.stringify({
+				"name": doc.value.name,
+				[key]: doc.value[key]
 			});
-		}
-	});
+			wss.clients.forEach((client) => client.send(payload));
+		});
 });
