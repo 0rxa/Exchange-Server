@@ -1,0 +1,18 @@
+#head {
+	width: 100%;
+	text-align: center;
+	background: black;
+	color: white;
+}
+
+app-row {
+	width: 100%;
+	text-align: center;
+}
+
+.header {
+	width: 33%;
+	display: inline-block;
+	font-weight: bold;
+	font-size: 25pt;
+}
