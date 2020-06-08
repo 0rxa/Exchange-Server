@@ -4,8 +4,8 @@ import { Component, Input } from '@angular/core';
   selector: 'app-row',
   template: `
       <div><img src="/assets/images/{{row.name}}.png">{{row.name}}</div>
-      <div>{{row.buy}}</div>
-      <div>{{row.sell}}</div>
+      <div class='buy'  (keydown)='send($event)' (click)='makeEditable($event)'>{{row.buy}}</div>
+      <div class='sell' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.sell}}</div>
   `,
   styles: [`
     div {
@@ -26,4 +26,29 @@ import { Component, Input } from '@angular/core';
 })
 export class RowComponent {
   @Input() row: { name: String, buy: Number, sell: Number }
+
+  makeEditable(evt) {
+    let element = evt.toElement;
+    element.setAttribute('contenteditable', true);
+  }
+
+  send(evt) {
+    if(evt.key !== 'Enter') { return; }
+    let element = evt.target;
+    element.setAttribute("contenteditable", "false");
+
+    let direction = element.getAttribute("class");
+    let value = element.textContent;
+
+    let obj = {
+      "name": this.row.name,
+      [direction]: parseFloat(value)
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("PUT", 'http://localhost:8080/update');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(obj));
+
+  }
 }
