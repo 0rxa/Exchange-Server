@@ -3,24 +3,31 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-row',
   template: `
-      <div><img src="/assets/images/{{row.name}}.png">{{row.name}}</div>
-      <div class='buy'  (keydown)='send($event)' (click)='makeEditable($event)'>{{row.buy}}</div>
-      <div class='sell' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.sell}}</div>
+    <div id='currency'><img src="/assets/images/{{row.name}}.png"><span>{{row.name}}</span></div>
+    <div class='buy' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.buy}}</div>
+    <div class='sell' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.sell}}</div>
   `,
   styles: [`
-    div {
+    @font-face {
+      font-family: 'B612 Mono', monospace;
+      src: url("https://fonts.googleapis.com/css2?family=B612+Mono&display=swap")
+    }
+    #currency, .buy, .sell {
       width: 33%;
       display: inline-block;
       position: relative;
       font-weight: bold;
       font-size: 3em;
     }
+    span {
+      position: relative;
+      left: 3%;
+    }
     img {
-      max-width: 100%;
-      max-height: 100%;
-      position: absolute;
-      left: 30%;
-      margin: auto;
+      vertical-align: middle;
+      position: relative;
+      left: 0px;
+      right: 3%;
     }
   `]
 })
@@ -49,6 +56,5 @@ export class RowComponent {
     xhr.open("PUT", 'http://localhost:8080/update');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(obj));
-
   }
 }

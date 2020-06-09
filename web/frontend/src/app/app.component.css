@@ -5,6 +5,10 @@
 	color: white;
 }
 
+#container {
+	border-bottom: 2px solid black;
+}
+
 app-row {
 	width: 100%;
 	text-align: center;

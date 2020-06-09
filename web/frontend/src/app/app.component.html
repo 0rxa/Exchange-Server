@@ -1,9 +1,11 @@
-<div id='head'>
-    <div class="header">Currency</div>
-    <div class="header">Buy</div>
-    <div class="header">Sell</div>
+<div id='container'>
+  <div id='head'>
+      <div class="header">Currency</div>
+      <div class="header">Buy</div>
+      <div class="header">Sell</div>
+  </div>
+  <app-row
+    *ngFor='let row of rows'
+    [row]="row">
+  </app-row>
 </div>
-<app-row
-  *ngFor='let row of rows'
-  [row]="row">
-</app-row>
