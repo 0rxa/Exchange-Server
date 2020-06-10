@@ -9,7 +9,12 @@
 	border-bottom: 2px solid black;
 }
 
+app-row:nth-child(odd) {
+	background-color: #ebe7e7;
+}
+
 app-row {
+	display: inline-block;
 	width: 100%;
 	text-align: center;
 }

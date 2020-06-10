@@ -12,6 +12,7 @@ import { Component, Input } from '@angular/core';
       font-family: 'B612 Mono', monospace;
       src: url("https://fonts.googleapis.com/css2?family=B612+Mono&display=swap")
     }
+
     #currency, .buy, .sell {
       width: 33%;
       display: inline-block;
@@ -20,8 +21,7 @@ import { Component, Input } from '@angular/core';
       font-size: 3em;
     }
     span {
-      position: relative;
-      left: 3%;
+      position: absolute;
     }
     img {
       vertical-align: middle;
@@ -32,7 +32,7 @@ import { Component, Input } from '@angular/core';
   `]
 })
 export class RowComponent {
-  @Input() row: { name: String, buy: Number, sell: Number }
+  @Input() row: { name: string, buy: number, sell: number }
 
   makeEditable(evt) {
     let element = evt.toElement;
