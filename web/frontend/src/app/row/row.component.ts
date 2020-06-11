@@ -1,45 +1,34 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
+import { environment } from './../../environments/environment'
 
 @Component({
   selector: 'app-row',
   template: `
     <div id='currency'><img src="/assets/images/{{row.name}}.png"><span>{{row.name}}</span></div>
-    <div class='buy' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.buy}}</div>
-    <div class='sell' (keydown)='send($event)' (click)='makeEditable($event)'>{{row.sell}}</div>
+    <div #buy class='buy'>{{row.buy}}</div>
+    <div #sell class='sell'>{{row.sell}}</div>
   `,
-  styles: [`
-    @font-face {
-      font-family: 'B612 Mono', monospace;
-      src: url("https://fonts.googleapis.com/css2?family=B612+Mono&display=swap")
-    }
-
-    #currency, .buy, .sell {
-      width: 33%;
-      display: inline-block;
-      position: relative;
-      font-weight: bold;
-      font-size: 3em;
-    }
-    span {
-      position: absolute;
-    }
-    img {
-      vertical-align: middle;
-      position: relative;
-      left: 0px;
-      right: 3%;
-    }
-  `]
+  styleUrls: ['./row.component.css']
 })
+
 export class RowComponent {
   @Input() row: { name: string, buy: number, sell: number }
+  @ViewChild('buy') buy: any;
+  @ViewChild('sell') sell: any;
+
+  ngAfterViewInit() {
+    ['buy', 'sell'].forEach(direction => {
+      this[direction].nativeElement.addEventListener('click', this.makeEditable);
+      this[direction].nativeElement.addEventListener('keydown', this.send);
+    });
+  }
 
   makeEditable(evt) {
     let element = evt.toElement;
     element.setAttribute('contenteditable', true);
   }
 
-  send(evt) {
+  send = (evt) => {
     if(evt.key !== 'Enter') { return; }
     let element = evt.target;
     element.setAttribute("contenteditable", "false");
@@ -53,7 +42,7 @@ export class RowComponent {
     }
 
     let xhr = new XMLHttpRequest();
-    xhr.open("PUT", 'http://localhost:8080/update');
+    xhr.open("PUT", `http://${environment.api}/update`);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(obj));
   }
