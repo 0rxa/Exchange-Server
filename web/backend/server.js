@@ -1,11 +1,11 @@
-require('dotenv').config()
+const config = require('./config');
 const express = require('express')
 const http = require('http')
 const ws = require('ws');
 const cors = require('cors');
 
 const MongoClient = require('mongodb').MongoClient;
-const { PORT, DB_HOST, DB_USER, DB_PASS } = process.env;
+const { PORT, DB_HOST, DB_USER, DB_PASS } = config;
 const DB_NAME = 'exchange';
 const COLLECTION = 'pair';
 const dbConnectionURL = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:27017/`;
