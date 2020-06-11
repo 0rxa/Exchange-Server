@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'B612 Mono', monospace;
+    src: url("https://fonts.googleapis.com/css2?family=B612+Mono&display=swap")
+  }
+
+  :host:nth-child(odd) {
+    background-color: #ebe7e7;
+  }
+
+  :host {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  #currency, .buy, .sell {
+    width: 33%;
+    display: inline-block;
+    position: relative;
+    font-weight: bold;
+    font-size: 3em;
+  }
+
+  span {
+    position: absolute;
+  }
+
+  img {
+    vertical-align: middle;
+    margin-right: 0.4em;
+  }
