@@ -1,7 +1,7 @@
-require('dotenv').config()
+const config = require('./config');
 const MongoClient = require('mongodb').MongoClient;
 
-const { DB_HOST, DB_USER, DB_PASS } = process.env;
+const { DB_HOST, DB_USER, DB_PASS } = config;
 const dbName = 'exchange';
 const url = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:27017/?authMechanism=DEFAULT`;
 const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -83,7 +83,10 @@ client.connect( async (err) => {
 				else console.log("Collection deleted");
 			});
 		}
-		insertDocuments(db, 'pair', pair, (result) => console.log(result));
+		insertDocuments(db, 'pair', pair, (result) => {
+            console.log(result);
+            client.close();
+        });
 	});
 });
 
